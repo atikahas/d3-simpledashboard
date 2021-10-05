@@ -1,0 +1,70 @@
+
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+<title>Loading CSV Data with D3</title>
+</head>
+
+<body>
+<div id="table"></div>
+</body>
+
+<script>
+
+d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTODV5OqxQupaKyWO7yQMXHHlnNJpLGjimMDb8dbQs0sRmyJlEbelaT5eCWbZXBLF_A8W68EnHEI6hk/pub?gid=331152056&single=true&output=csv", function(error, data) {
+
+    if (error){
+        console.log("Had an error loading file.");
+    }
+
+    var myArray = [];
+
+    data.forEach(function(d, i){
+        // Add a new array with the values of each:
+        myArray.push([d.Platform, d.FirstRetailAvailability,  d.Discontinued, d.UnitsSoldMillions]);
+    });
+
+    console.log(data);
+    console.log(myArray);
+
+    var table = d3.select("#table").append("table");
+
+    var header = table.append("thead").append("tr");
+
+    // do a data join and create th items for each data element in the array
+    header.selectAll("th")
+        .data(["Platform", "First Retail Availability", "Discontinued", "Units Sold (Millions)"])
+        .enter()
+        .append("th")
+        .text(function(d) { return d; })
+        .style ("font-size", "18px")
+        .style("background-clor", "blue")
+        .style("border", "1px black solid")
+        .style("padding", "5px");
+
+
+    var tablebody = table.append("tbody");
+
+    rows = tablebody.selectAll("tr")
+        .data(myArray)
+        .enter()
+        .append("tr")
+        .on("mouseover", function(){d3.select(this).style("background-color", "aliceblue")}) 
+        .on("mouseout", function(){d3.select(this).style("background-color", "white")});
+
+    // We built the rows using the nested array - now each row has its own array.
+    cells = rows.selectAll("td")
+    // each row has data associated; we get it and enter it for the cells.
+        .data(function(d){console.log(d); return d;})
+        .enter()
+        .append("td")
+        .attr("width", 400)
+        .style("border", "1px black solid")
+        .style("padding", "2px")
+        .text(function(d) {return d;});
+
+});
+
+</script>
+</html>
